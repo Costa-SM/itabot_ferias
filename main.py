@@ -91,8 +91,8 @@ while(True):
     print("Hours since last post:", last_delta)
     print("Current time in SP:", hour_sp)
 
-    #If it has been more than 23 hours since the last post, and it is over 8am in Sao Paulo, execute the tweet routine.
-    if(last_delta >= 23 and hour_sp >= 8):
+    #If it has been more than 13 hours since the last post, and it is over 8am in Sao Paulo, execute the tweet routine.
+    if(last_delta >= 13 and hour_sp >= 8):
         passedMidYear, currentDelta = getDaysMidVacation(dateToday)
 
         if(passedMidYear):
@@ -106,4 +106,4 @@ while(True):
             bot_account.tweet(tweet)
             print("Tweeted: ", tweet)
 
-    time.sleep(7200)
+    time.sleep(3600 / 2)
