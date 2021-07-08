@@ -17,7 +17,7 @@ def getDaysMidVacation(today):
     midEnd = datetime.datetime.fromisoformat("2021-07-30")
 
     if((midStart - today).days > 0):
-        return False, (midStart - today).days
+        return False, ((midStart - today).days + 1)
 
     elif((midStart - today).days <= 0 and (midEnd - today).days >= 0):
         return False, -1
@@ -37,7 +37,7 @@ def getDaysEndVacation(today):
     #Date that the end of the year vacation starts.
     endDay = datetime.datetime.fromisoformat("2021-12-13")
 
-    return (endDay - today).days
+    return ((endDay - today).days + 1)
 
 def compose_tweet(days, vacation):
     """
