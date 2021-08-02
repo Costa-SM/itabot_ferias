@@ -16,10 +16,10 @@ def getDaysMidVacation(today):
     midStart = datetime.datetime.fromisoformat("2021-07-09")
     midEnd = datetime.datetime.fromisoformat("2021-07-30")
 
-    if((midStart - today).days > 0):
+    if((midStart - today).days + 1 > 0):
         return False, ((midStart - today).days + 1)
 
-    elif((midStart - today).days <= 0 and (midEnd - today).days >= 0):
+    elif((midStart - today).days + 1 <= 0 and (midEnd - today).days + 1 >= 0):
         return False, -1
 
     else:
