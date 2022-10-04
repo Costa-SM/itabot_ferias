@@ -1,3 +1,1 @@
-tweepy
-pre-commit
-black
+tweepy==4.10.x
