@@ -160,8 +160,12 @@ while True:
             time.sleep(5)
             continue
 
-        if lastText != tweet:
+        elif custom_dotenv["DEBUG_MODE"].lower() == "false" and lastText != tweet:
             bot_account.tweet(tweet)
             print("Tweeted: ", tweet)
+
+        else:
+            print("Invalid mode.")
+            time.sleep(5)
 
     time.sleep(3600 / 2)
