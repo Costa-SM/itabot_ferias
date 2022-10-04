@@ -88,17 +88,19 @@ custom_dotenv = dotenv_values(".env")
 # Assert that the environment variables are properly set. Otherwise, the program will
 # not function properly.
 
-environment_variables = ["CONSUMER_KEY",
-                         "CONSUMER_SECRET",
-                         "BEARER",
-                         "ACCESS_TOKEN",
-                         "ACCESS_TOKEN_SECRET",
-                         "MIDYEAR_START",
-                         "MIDYEAR_END",
-                         "ENDYEAR_START",
-                         "DEBUG_MODE",
-                         "TIME_START_TWEET",
-                         "TIME_DELTA_TWEET"]
+environment_variables = [
+    "CONSUMER_KEY",
+    "CONSUMER_SECRET",
+    "BEARER",
+    "ACCESS_TOKEN",
+    "ACCESS_TOKEN_SECRET",
+    "MIDYEAR_START",
+    "MIDYEAR_END",
+    "ENDYEAR_START",
+    "DEBUG_MODE",
+    "TIME_START_TWEET",
+    "TIME_DELTA_TWEET",
+]
 
 for variable in environment_variables:
     assert custom_dotenv[variable]
@@ -120,9 +122,9 @@ print("Starting tweet loop...\n")
 while True:
     # Update the environment variables
     custom_dotenv = dotenv_values(".env")
-    
+
     dateToday = datetime.datetime.today()
-    
+
     # Try/except method to avoid script crashing due to timeout.
     try:
         lastText = bot_account.get_last_tweet_text()
@@ -130,7 +132,7 @@ while True:
         print("Connection timed out.")
         time.sleep(5)
         continue
-    
+
     print("\nLast tweet: ", lastText)
 
     hour_sp = (datetime.datetime.utcnow() - datetime.timedelta(hours=3)).hour
@@ -142,7 +144,9 @@ while True:
     # If it has been more than the specified amount of hours since the last post, and it is over the specified
     # tweet start time in Sao Paulo, execute the tweet routine.
     # Suggested values are 13 hours for TIME_DELTA_TWEET, and 8 a.m. for TIME_START_TWEET.
-    if last_delta >= int(custom_dotenv["TIME_DELTA_TWEET"]) and hour_sp >= int(custom_dotenv["TIME_START_TWEET"]):
+    if last_delta >= int(custom_dotenv["TIME_DELTA_TWEET"]) and hour_sp >= int(
+        custom_dotenv["TIME_START_TWEET"]
+    ):
         passedMidYear, currentDelta = getDaysMidVacation(dateToday)
 
         if passedMidYear:
