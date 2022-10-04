@@ -3,6 +3,7 @@ import datetime
 
 from account_handler import Account
 
+
 def getDaysMidVacation(today):
     """
     Find out if the mid year vacations have already passed, and return the days until it starts.
@@ -10,20 +11,21 @@ def getDaysMidVacation(today):
     :param today: Today's date
     :type today: datetime object
     """
-    #2021 Mid-year Vacation: July 9 - July 30
+    # 2021 Mid-year Vacation: July 9 - July 30
 
-    #Date that the mid year vacation starts.
+    # Date that the mid year vacation starts.
     midStart = datetime.datetime.fromisoformat("2021-07-09")
     midEnd = datetime.datetime.fromisoformat("2021-07-30")
 
-    if((midStart - today).days + 1 > 0):
+    if (midStart - today).days + 1 > 0:
         return False, ((midStart - today).days + 1)
 
-    elif((midStart - today).days + 1 <= 0 and (midEnd - today).days + 1 >= 0):
+    elif (midStart - today).days + 1 <= 0 and (midEnd - today).days + 1 >= 0:
         return False, -1
 
     else:
         return True, -1
+
 
 def getDaysEndVacation(today):
     """
@@ -32,12 +34,13 @@ def getDaysEndVacation(today):
     :param today: Today's date
     :type today: datetime object
     """
-    #2021 End-of-the-year vacation: December 13
+    # 2021 End-of-the-year vacation: December 13
 
-    #Date that the end of the year vacation starts.
+    # Date that the end of the year vacation starts.
     endDay = datetime.datetime.fromisoformat("2021-12-13")
 
-    return ((endDay - today).days + 1)
+    return (endDay - today).days + 1
+
 
 def compose_tweet(days, vacation):
     """
@@ -48,13 +51,14 @@ def compose_tweet(days, vacation):
     :param vacation: String that connects the tweet's sentence. Either "meio de ano" or "fim de ano".
     :type vacation: str
     """
-    
-    if days <= 0 or vacation == 'holiday':
+
+    if days <= 0 or vacation == "holiday":
         return "Boas férias!"
     elif days == 1:
         return "Falta 1 dia até as férias de " + vacation + " do ITA!"
     else:
         return "Faltam " + str(days) + " dias até as férias de " + vacation + " do ITA!"
+
 
 def post_delta(account):
     """
@@ -70,18 +74,19 @@ def post_delta(account):
 
     return (time_delta.seconds / 3600) + 24 * time_delta.days
 
+
 #############################################################################################################################
-#---------------------------------------------------------------------------------------------------------------------------#
+# ---------------------------------------------------------------------------------------------------------------------------#
 #############################################################################################################################
 
-consumer_key = ('CONSUMER_KEY', 'CONSUMER_SECRET')
-bearer = 'BEARER'
-access_token = ('ACCESS_TOKEN', 'ACCESS_TOKEN_SECRET')
+consumer_key = ("CONSUMER_KEY", "CONSUMER_SECRET")
+bearer = "BEARER"
+access_token = ("ACCESS_TOKEN", "ACCESS_TOKEN_SECRET")
 
 bot_account = Account(consumer_key, bearer, access_token)
 
-#Start the bot script
-while(True):
+# Start the bot script
+while True:
     dateToday = datetime.datetime.today()
     lastText = bot_account.get_last_tweet_text()
 
@@ -91,18 +96,17 @@ while(True):
     print("Hours since last post:", last_delta)
     print("Current time in SP:", hour_sp)
 
-    #If it has been more than 13 hours since the last post, and it is over 8am in Sao Paulo, execute the tweet routine.
-    if(last_delta >= 13 and hour_sp >= 8):
+    # If it has been more than 13 hours since the last post, and it is over 8am in Sao Paulo, execute the tweet routine.
+    if last_delta >= 13 and hour_sp >= 8:
         passedMidYear, currentDelta = getDaysMidVacation(dateToday)
 
-        if(passedMidYear):
+        if passedMidYear:
             currentDelta = getDaysEndVacation(dateToday)
-            tweet = compose_tweet(currentDelta, 'fim de ano')
+            tweet = compose_tweet(currentDelta, "fim de ano")
         else:
-            tweet = compose_tweet(currentDelta, 'meio de ano')
+            tweet = compose_tweet(currentDelta, "meio de ano")
 
-
-        if(lastText != tweet):
+        if lastText != tweet:
             bot_account.tweet(tweet)
             print("Tweeted: ", tweet)
 

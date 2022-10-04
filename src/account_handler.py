@@ -1,9 +1,11 @@
 import tweepy
 
+
 class Account(object):
     """
     Represents the account that will be used with the Twitter API.
-    """    
+    """
+
     def __init__(self, consumerkey, bearer, accesskey):
         """
         Prepares the account for use with the Twitter API via Tweepy.
@@ -11,23 +13,22 @@ class Account(object):
         :type consumerkey: tuple
         :param bearer: String containing the bearer for the account.
         :type bearer: str
-        :param accesskey: Tuple containing the Access Token and Access Token Secret. 
+        :param accesskey: Tuple containing the Access Token and Access Token Secret.
         :type accesskey: tuple
         """
 
         self.consumer_key = consumerkey
         self.bearer = bearer
         self.access_key = accesskey
-        
+
         self.auth = tweepy.OAuthHandler(self.consumer_key[0], self.consumer_key[1])
         self.auth.set_access_token(self.access_key[0], self.access_key[1])
         self.api = tweepy.API(self.auth)
 
-
     def get_homepage_tweets(self):
         """
         Gets the last 20 tweets presented in the account's main timeline (i.e. homepage).
-        :rtype: list of status objects        
+        :rtype: list of status objects
         """
 
         return self.api.home_timeline()
