@@ -122,7 +122,15 @@ while True:
     custom_dotenv = dotenv_values(".env")
     
     dateToday = datetime.datetime.today()
-    lastText = bot_account.get_last_tweet_text()
+    
+    # Try/except method to avoid script crashing due to timeout.
+    try:
+        lastText = bot_account.get_last_tweet_text()
+    except:
+        print("Connection timed out.")
+        time.sleep(5)
+        continue
+    
     print("\nLast tweet: ", lastText)
 
     hour_sp = (datetime.datetime.utcnow() - datetime.timedelta(hours=3)).hour
