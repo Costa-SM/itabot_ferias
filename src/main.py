@@ -1,6 +1,6 @@
 import time
 import datetime
-import os
+import tweepy
 from dotenv import dotenv_values
 
 from account_handler import Account
@@ -128,7 +128,7 @@ while True:
     # Try/except method to avoid script crashing due to timeout.
     try:
         lastText = bot_account.get_last_tweet_text()
-    except:
+    except tweepy.TweepyException:
         print("Connection timed out.")
         time.sleep(5)
         continue
