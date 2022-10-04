@@ -1,5 +1,7 @@
 import time
 import datetime
+import os
+from dotenv import dotenv_values
 
 from account_handler import Account
 
@@ -11,11 +13,10 @@ def getDaysMidVacation(today):
     :param today: Today's date
     :type today: datetime object
     """
-    # 2021 Mid-year Vacation: July 9 - July 30
 
     # Date that the mid year vacation starts.
-    midStart = datetime.datetime.fromisoformat("2021-07-09")
-    midEnd = datetime.datetime.fromisoformat("2021-07-30")
+    midStart = datetime.datetime.fromisoformat(custom_dotenv["MIDYEAR_START"])
+    midEnd = datetime.datetime.fromisoformat(custom_dotenv["MIDYEAR_END"])
 
     if (midStart - today).days + 1 > 0:
         return False, ((midStart - today).days + 1)
@@ -34,10 +35,9 @@ def getDaysEndVacation(today):
     :param today: Today's date
     :type today: datetime object
     """
-    # 2021 End-of-the-year vacation: December 13
 
     # Date that the end of the year vacation starts.
-    endDay = datetime.datetime.fromisoformat("2021-12-13")
+    endDay = datetime.datetime.fromisoformat(custom_dotenv["ENDYEAR_START"])
 
     return (endDay - today).days + 1
 
@@ -79,16 +79,59 @@ def post_delta(account):
 # ---------------------------------------------------------------------------------------------------------------------------#
 #############################################################################################################################
 
-consumer_key = ("CONSUMER_KEY", "CONSUMER_SECRET")
-bearer = "BEARER"
-access_token = ("ACCESS_TOKEN", "ACCESS_TOKEN_SECRET")
+# Startup message
+print("Starting the bot program...")
 
+# Load the custom environment variables from the dotenv file.
+custom_dotenv = dotenv_values(".env")
+
+# Assert that the environment variables are properly set. Otherwise, the program will
+# not function properly.
+
+environment_variables = ["CONSUMER_KEY",
+                         "CONSUMER_SECRET",
+                         "BEARER",
+                         "ACCESS_TOKEN",
+                         "ACCESS_TOKEN_SECRET",
+                         "MIDYEAR_START",
+                         "MIDYEAR_END",
+                         "ENDYEAR_START",
+                         "DEBUG_MODE",
+                         "TIME_START_TWEET",
+                         "TIME_DELTA_TWEET"]
+
+for variable in environment_variables:
+    assert custom_dotenv[variable]
+
+print("Environment variables are OK.")
+
+# Store the user specified account environment variables
+consumer_key = (custom_dotenv["CONSUMER_KEY"], custom_dotenv["CONSUMER_SECRET"])
+bearer = custom_dotenv["BEARER"]
+access_token = (custom_dotenv["ACCESS_TOKEN"], custom_dotenv["ACCESS_TOKEN_SECRET"])
+
+# Create the account object using said variables
 bot_account = Account(consumer_key, bearer, access_token)
+
+print("Account object created.")
+print("Starting tweet loop...\n")
 
 # Start the bot script
 while True:
+    # Update the environment variables
+    custom_dotenv = dotenv_values(".env")
+    
     dateToday = datetime.datetime.today()
-    lastText = bot_account.get_last_tweet_text()
+    
+    # Try/except method to avoid script crashing due to timeout.
+    try:
+        lastText = bot_account.get_last_tweet_text()
+    except:
+        print("Connection timed out.")
+        time.sleep(5)
+        continue
+    
+    print("\nLast tweet: ", lastText)
 
     hour_sp = (datetime.datetime.utcnow() - datetime.timedelta(hours=3)).hour
     last_delta = post_delta(bot_account)
@@ -96,8 +139,10 @@ while True:
     print("Hours since last post:", last_delta)
     print("Current time in SP:", hour_sp)
 
-    # If it has been more than 13 hours since the last post, and it is over 8am in Sao Paulo, execute the tweet routine.
-    if last_delta >= 13 and hour_sp >= 8:
+    # If it has been more than the specified amount of hours since the last post, and it is over the specified
+    # tweet start time in Sao Paulo, execute the tweet routine.
+    # Suggested values are 13 hours for TIME_DELTA_TWEET, and 8 a.m. for TIME_START_TWEET.
+    if last_delta >= int(custom_dotenv["TIME_DELTA_TWEET"]) and hour_sp >= int(custom_dotenv["TIME_START_TWEET"]):
         passedMidYear, currentDelta = getDaysMidVacation(dateToday)
 
         if passedMidYear:
@@ -105,6 +150,11 @@ while True:
             tweet = compose_tweet(currentDelta, "fim de ano")
         else:
             tweet = compose_tweet(currentDelta, "meio de ano")
+
+        if custom_dotenv["DEBUG_MODE"].lower() == "true":
+            print("Composed tweet: ", tweet)
+            time.sleep(5)
+            continue
 
         if lastText != tweet:
             bot_account.tweet(tweet)

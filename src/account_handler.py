@@ -39,7 +39,7 @@ class Account(object):
         :rtype: datetime object
         """
 
-        return self.api.user_timeline()[0].created_at
+        return self.api.user_timeline()[0].created_at.replace(tzinfo=None)
 
     def get_last_tweet_text(self):
         """

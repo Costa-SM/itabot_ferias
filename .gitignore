@@ -1,0 +1,5 @@
+# Dot env file containing sensitive information
+.env
+
+# pycache folder
+__pycache__
