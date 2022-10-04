@@ -1,1 +1,1 @@
-tweepy==4.10.x
+tweepy>=4.10.1
